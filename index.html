@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Management-Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.3em;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .answers {
+      list-style: none;
+      padding: 0;
+    }
+    .answers li {
+      margin: 12px 0;
+    }
+    .btn {
+      background: #2563eb;
+      color: white;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      text-align: left;
+    }
+    .btn:hover {
+      background: #1e40af;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    .hidden {
+      display: none;
+    }
+    .result {
+      font-size: 1.3em;
+      margin-top: 30px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quiz"></div>
+    <button id="nextBtn" class="btn hidden">Nächste Frage</button>
+    <div id="result" class="result hidden"></div>
+  </div>
+
+  <script>
+    const rawQuestions = [
+      {
+        question: "Dein Unternehmen bietet Benefits wie warme Mahlzeit, Sportvergünstigungen und ein Jobrad-Programm. Trotzdem bleibt die Motivation gering. Was tust du?",
+        answers: [
+          "Du entwickelst eine interne Kommunikationskampagne zur Erklärung und Sichtbarkeit der Angebote.",
+          "Du schaffst das Mittagessen ab und ersetzt es durch Gutscheine.",
+          "Du bietest eine einmalige Teamprämie für gute Stimmung.",
+          "Du vermutest Undankbarkeit und änderst nichts."
+        ],
+        correct: 0
+      },
+      {
+        question: "Im Unternehmen gelten individuelle Gehaltsvereinbarungen. Viele Mitarbeitende wissen nicht, warum andere mehr verdienen. Was ist eine sinnvolle Maßnahme?",
+        answers: [
+          "Du entwickelst ein nachvollziehbares Gehaltssystem mit klaren Kriterien.",
+          "Du erinnerst daran, dass Gehälter Privatsache sind.",
+          "Du erhöhst die Teamleiter:innen-Gehälter pauschal.",
+          "Du führst ein Bonussystem ohne Kommunikation ein."
+        ],
+        correct: 0
+      },
+      {
+        question: "Dein Unternehmen zahlt überkollektivvertraglich, aber ohne Leistungsanreize. Die Fluktuation ist hoch. Wie könntest du gegensteuern?",
+        answers: [
+          "Du führst ein transparentes Prämienmodell für langfristige Betriebszugehörigkeit ein.",
+          "Du erinnerst alle an die überdurchschnittliche Bezahlung.",
+          "Du versuchst, neue Leute mit noch höheren Startgehältern zu gewinnen.",
+          "Du streichst freiwillige Leistungen, um Kosten zu sparen."
+        ],
+        correct: 0
+      },
+      {
+        question: "Einige Mitarbeitende wirken demotiviert und fühlen sich festgefahren. Es gibt wenig systematische Förderung. Was tust du?",
+        answers: [
+          "Du führst regelmäßige Entwicklungsgespräche und Weiterbildungsangebote mit klaren Zielen ein.",
+          "Du setzt strengere Zielvereinbarungen und Evaluationen ein.",
+          "Du gibst kleine Geldprämien für Weiterbildungen.",
+          "Du erinnerst an die bestehenden Benefits."
+        ],
+        correct: 0
+      },
+      {
+        question: "Dein Team hat Zugang zu vielen Benefits, aber du spürst Frust. Was ist der logischste nächste Schritt?",
+        answers: [
+          "Du führst eine anonyme Zufriedenheitsbefragung ein und reagierst strukturiert auf die Ergebnisse.",
+          "Du verstärkst die Kontrolle im Arbeitsalltag.",
+          "Du baust die Benefits um weitere Gutscheine aus.",
+          "Du ignorierst die Stimmung – Hauptsache, die Leistung stimmt."
+        ],
+        correct: 0
+      },
+      {
+        question: "Mitarbeitende beklagen, dass Feedback nur bei Fehlern kommt. Was tust du?",
+        answers: [
+          "Du führst eine Kultur aktiver Rückmeldung und Anerkennung ein.",
+          "Du verpflichtest Vorgesetzte zu Kritikprotokollen.",
+          "Du wartest, bis jemand kündigt, um Feedback zu erfragen.",
+          "Du bietest nur Team-Feedback einmal pro Jahr."
+        ],
+        correct: 0
+      },
+      {
+        question: "Eine neue Zusatzleistung (z. B. Yoga-Kurs) wird kaum angenommen – trotz Werbung. Was tust du?",
+        answers: [
+          "Du befragst Mitarbeitende direkt nach ihren Wünschen für zukünftige Angebote.",
+          "Du verpflichtest zur Teilnahme am Yoga.",
+          "Du ziehst das Angebot ein halbes Jahr durch, egal ob es jemand nutzt.",
+          "Du kündigst weitere Angebote an, ohne Rücksprache."
+        ],
+        correct: 0
+      },
+      {
+        question: "Du hast Löhne deutlich erhöht – doch die Mitarbeitenden scheinen nicht motivierter. Was tust du?",
+        answers: [
+          "Du ergänzt die Löhne um Aufgabenvielfalt, Anerkennung und Weiterentwicklung.",
+          "Du verdoppelst das Gehalt.",
+          "Du kündigst konsequente Kontrolle an.",
+          "Du machst Löhne wieder rückgängig."
+        ],
+        correct: 0
+      }
+    ];
+
+    const questions = rawQuestions.map(q => {
+      const shuffled = q.answers.map((a, i) => ({ text: a, originalIndex: i }))
+                                .sort(() => Math.random() - 0.5);
+      const newCorrect = shuffled.findIndex(ans => ans.originalIndex === q.correct);
+      return {
+        question: q.question,
+        answers: shuffled.map(a => a.text),
+        correct: newCorrect
+      };
+    });
+
+    let current = 0;
+    let score = 0;
+
+    const quizDiv = document.getElementById('quiz');
+    const nextBtn = document.getElementById('nextBtn');
+    const resultDiv = document.getElementById('result');
+
+    function showQuestion() {
+      const q = questions[current];
+      quizDiv.innerHTML = `<div class="question">${q.question}</div><ul class="answers">` +
+        q.answers.map((a, i) => `<li><button class="btn" onclick="selectAnswer(${i})">${a}</button></li>`).join('') +
+        `</ul><div id="feedback" class="feedback"></div>`;
+    }
+
+    function selectAnswer(index) {
+      const q = questions[current];
+      const feedback = document.getElementById('feedback');
+      if (index === q.correct) {
+        score++;
+        feedback.textContent = '✅ Richtig!';
+      } else {
+        feedback.textContent = '❌ Falsch.';
+      }
+      document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+      nextBtn.classList.remove('hidden');
+    }
+
+    nextBtn.addEventListener('click', () => {
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+        nextBtn.classList.add('hidden');
+      } else {
+        quizDiv.innerHTML = '';
+        nextBtn.classList.add('hidden');
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `Spiel beendet! Sie haben ${score} von ${questions.length} Entscheidungen richtig getroffen.`;
+      }
+    });
+
+    showQuestion();
+
+    // 🔑 Wichtig: Damit onclick="selectAnswer(...)" funktioniert
+    window.selectAnswer = selectAnswer;
+  </script>
+</body>
+</html>
